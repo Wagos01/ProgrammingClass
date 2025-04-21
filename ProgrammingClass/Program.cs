@@ -33,7 +33,7 @@ namespace ProgrammingClass
 
         private static float shininess = 50;
 
-        private static GlObject miniCooper;
+        private static GlObject classRoom;
 
         private static GlObject table;
 
@@ -225,23 +225,19 @@ namespace ProgrammingClass
         {
             var modelMatrix = Matrix4X4.CreateTranslation(0f, 0f, 5f);
             SetModelMatrix(modelMatrix);
-            Gl.BindVertexArray(miniCooper.Vao);
-            Gl.DrawElements(GLEnum.Triangles, miniCooper.IndexArrayLength, GLEnum.UnsignedInt, null);
+            Gl.BindVertexArray(classRoom.Vao);
+            Gl.DrawElements(GLEnum.Triangles, classRoom.IndexArrayLength, GLEnum.UnsignedInt, null);
             Gl.BindVertexArray(0);
         }
         private static unsafe void SetUpObjects()
         {
 
-            float[] face1Color = [1f, 0f, 0f, 1.0f];
-            float[] face2Color = [0.0f, 1.0f, 0.0f, 1.0f];
-            float[] face3Color = [0.0f, 0.0f, 1.0f, 1.0f];
-            float[] face4Color = [1.0f, 0.0f, 1.0f, 1.0f];
-            float[] face5Color = [0.0f, 1.0f, 1.0f, 1.0f];
-            float[] face6Color = [1.0f, 1.0f, 0.0f, 1.0f];
+            float[] gray = [0.5f, 0.5f, 0.5f, 1.0f];
 
 
 
-            miniCooper = ObjResourceReader.CreateFromObjFileWithNormals(Gl, "ProgrammingClass.Resources.minicooper.obj", face2Color);
+
+            classRoom = ObjResourceReader.CreateFromObjFileWithNormals(Gl, "ProgrammingClass.Resources.ClassRoom.obj", gray);
 
 
 

@@ -9,12 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\ClassRoom.mtl" />
+    <None Remove="Resources\ClassRoom.obj" />
     <None Remove="Resources\minicooper.obj" />
     <None Remove="Shaders\FragmentShader.frag" />
     <None Remove="Shaders\VertexShader.vert" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\ClassRoom.mtl" />
+    <EmbeddedResource Include="Resources\ClassRoom.obj" />
     <EmbeddedResource Include="Resources\minicooper.obj" />
     <EmbeddedResource Include="Shaders\FragmentShader.frag" />
     <EmbeddedResource Include="Shaders\VertexShader.vert" />
