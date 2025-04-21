@@ -4,16 +4,23 @@ out vec4 FragColor;
 uniform vec3 uLightColor;
 uniform vec3 uLightPos;
 uniform vec3 uViewPos;
-
 uniform float uShininess;
 
-		
+uniform sampler2D uTexture;
+uniform bool uUseTexture;
+
 in vec4 outCol;
 in vec3 outNormal;
 in vec3 outWorldPosition;
+in vec2 outTexCoord;
 
 void main()
 {
+    vec4 baseColor = outCol;
+
+    if (uUseTexture)
+        baseColor = texture(uTexture, outTexCoord);
+
     float ambientStrength = 0.1;
     vec3 ambient = ambientStrength * uLightColor;
 
@@ -28,7 +35,7 @@ void main()
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), uShininess);
 
-    vec3 result = (ambient + diffuse + spec) * outCol.rgb;
+    vec3 result = (ambient + diffuse + spec) * baseColor.rgb;
 
-    FragColor = vec4(result, outCol.w);
+    FragColor = vec4(result, baseColor.a);
 }

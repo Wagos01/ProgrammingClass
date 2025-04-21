@@ -37,6 +37,7 @@ namespace ProgrammingClass
 
         private static GlObject table;
 
+        private static Teacher teacher;
 
         private static uint program;
 
@@ -60,6 +61,8 @@ namespace ProgrammingClass
         {
             //cube.Dispose();
             Gl.DeleteProgram(program);
+            classRoom.ReleaseGlObject();
+            table.ReleaseGlObject();
         }
 
         private static void GraphicWindow_Load()
@@ -171,8 +174,14 @@ namespace ProgrammingClass
                     camera.DecreaseZXAngle();
                     break;
                 case Key.Space:
-                    //cubeArrangementModel.AnimationEnabled = !cubeArrangementModel.AnimationEnabled;
+                    teacher.Rotate(0.5f);
                     break;
+                case Key.A:
+                    teacher.RotateLeftLeg(0.1f);
+                    break;
+                case Key.S:
+                    teacher.RotateRightLeg(0.1f); break;
+
             }
         }
 
@@ -203,8 +212,12 @@ namespace ProgrammingClass
             var projectionMatrix = Matrix4X4.CreatePerspectiveFieldOfView<float>((float)(Math.PI / 2), 1024f / 768f, 0.1f, 100f);
             SetMatrix(projectionMatrix, ProjectionMatrixVariableName);
 
-            DrawMiniCooper();
+            SetUniformInt("uUseTexture", 0);// nincs textura
+            DrawClassRoom();
             DrawTable();
+
+         
+            teacher.DrawTeacher(ref Gl);
 
 
             ImGuiNET.ImGui.Begin("Lighting", ImGuiNET.ImGuiWindowFlags.AlwaysAutoResize | ImGuiNET.ImGuiWindowFlags.NoCollapse);
@@ -221,7 +234,7 @@ namespace ProgrammingClass
             Gl.DrawElements(GLEnum.Triangles, table.IndexArrayLength, GLEnum.UnsignedInt, null);
             Gl.BindVertexArray(0);
         }
-        private static unsafe void DrawMiniCooper()
+        private static unsafe void DrawClassRoom()
         {
             var modelMatrix = Matrix4X4.CreateTranslation(0f, 0f, 5f);
             SetModelMatrix(modelMatrix);
@@ -237,8 +250,8 @@ namespace ProgrammingClass
 
 
 
-            classRoom = ObjResourceReader.CreateFromObjFileWithNormals(Gl, "ProgrammingClass.Resources.ClassRoom.obj", gray);
-
+            classRoom = ObjResourceReader.CreateFromObjFileWithNormals(Gl, "ProgrammingClass.Resources.ClassRoom.obj", gray, "ProgrammingClass.Resources.ClassRoom.mtl");
+            teacher = new Teacher(ref Gl);
 
 
             float[] tableColor = [System.Drawing.Color.Azure.R/256f,
@@ -299,7 +312,17 @@ namespace ProgrammingClass
             Gl.Uniform3(location, uniformValue);
             CheckError();
         }
+        public static unsafe void SetUniformInt(string uniformName, int value)
+        {
+            int location = Gl.GetUniformLocation(program, uniformName);
+            if (location == -1)
+            {
+                throw new Exception($"{uniformName} uniform not found on shader.");
+            }
 
+            Gl.Uniform1(location, value);
+            CheckError();
+        }
 
         private static unsafe void SetMatrix(Matrix4X4<float> mx, string uniformName)
         {

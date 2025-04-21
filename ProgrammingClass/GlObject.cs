@@ -9,6 +9,7 @@ namespace ProgrammingClass
         public uint Colors { get; }
         public uint Indices { get; }
         public uint IndexArrayLength { get; }
+        public uint TextureId { get; set; } = 0;
 
         private GL Gl;
 
@@ -20,6 +21,16 @@ namespace ProgrammingClass
             this.Indices = indeces;
             this.IndexArrayLength = indexArrayLength;
             this.Gl = gl;
+        }
+        public GlObject(uint vao, uint vertices, uint colors, uint indeces, uint indexArrayLength, GL gl, uint textureId = 0)
+        {
+            this.Vao = vao;
+            this.Vertices = vertices;
+            this.Colors = colors;
+            this.Indices = indeces;
+            this.IndexArrayLength = indexArrayLength;
+            this.Gl = gl;
+            this.TextureId = textureId;
         }
 
         internal void ReleaseGlObject()
