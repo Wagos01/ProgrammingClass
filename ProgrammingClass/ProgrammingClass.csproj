@@ -17,6 +17,12 @@
     <None Remove="Resources\leftLeg.obj" />
     <None Remove="Resources\rightLeg.mtl" />
     <None Remove="Resources\rightLeg.obj" />
+    <None Remove="Resources\StudentBody.mtl" />
+    <None Remove="Resources\StudentBody.obj" />
+    <None Remove="Resources\StudentLeftHand.mtl" />
+    <None Remove="Resources\StudentLeftHand.obj" />
+    <None Remove="Resources\StudentRightHand.mtl" />
+    <None Remove="Resources\StudentRightHand.obj" />
     <None Remove="Shaders\FragmentShader.frag" />
     <None Remove="Shaders\VertexShader.vert" />
   </ItemGroup>
@@ -30,6 +36,12 @@
     <EmbeddedResource Include="Resources\leftLeg.obj" />
     <EmbeddedResource Include="Resources\rightLeg.mtl" />
     <EmbeddedResource Include="Resources\rightLeg.obj" />
+    <EmbeddedResource Include="Resources\StudentBody.mtl" />
+    <EmbeddedResource Include="Resources\StudentBody.obj" />
+    <EmbeddedResource Include="Resources\StudentLeftHand.mtl" />
+    <EmbeddedResource Include="Resources\StudentLeftHand.obj" />
+    <EmbeddedResource Include="Resources\StudentRightHand.mtl" />
+    <EmbeddedResource Include="Resources\StudentRightHand.obj" />
     <EmbeddedResource Include="Shaders\FragmentShader.frag" />
     <EmbeddedResource Include="Shaders\VertexShader.vert" />
   </ItemGroup>

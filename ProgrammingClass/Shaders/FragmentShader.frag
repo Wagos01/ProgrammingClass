@@ -21,7 +21,7 @@ void main()
     if (uUseTexture)
         baseColor = texture(uTexture, outTexCoord);
 
-    float ambientStrength = 0.1;
+    float ambientStrength = 0.3;
     vec3 ambient = ambientStrength * uLightColor;
 
     float diffuseStrength = 0.3;

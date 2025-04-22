@@ -39,6 +39,8 @@ namespace ProgrammingClass
 
         private static Teacher teacher;
 
+        private static Student student;
+
         private static uint program;
 
         static void Main(string[] args)
@@ -63,6 +65,8 @@ namespace ProgrammingClass
             Gl.DeleteProgram(program);
             classRoom.ReleaseGlObject();
             table.ReleaseGlObject();
+            teacher.ReleaseGlObject();
+            student.ReleaseGlObject();
         }
 
         private static void GraphicWindow_Load()
@@ -202,7 +206,7 @@ namespace ProgrammingClass
             Gl.UseProgram(program);
 
             SetUniform3(LightColorVariableName, new Vector3(1f, 1f, 1f));
-            SetUniform3(LightPositionVariableName, new Vector3(0f, 5f, 0f));
+            SetUniform3(LightPositionVariableName, new Vector3(0f, 10f, 0f));
             SetUniform3(ViewPositionVariableName, new Vector3(camera.Position.X, camera.Position.Y, camera.Position.Z));
             SetUniform1(ShinenessVariableName, shininess);
 
@@ -218,7 +222,7 @@ namespace ProgrammingClass
 
          
             teacher.DrawTeacher(ref Gl);
-
+            student.DrawStudent(ref Gl);
 
             ImGuiNET.ImGui.Begin("Lighting", ImGuiNET.ImGuiWindowFlags.AlwaysAutoResize | ImGuiNET.ImGuiWindowFlags.NoCollapse);
             ImGuiNET.ImGui.SliderFloat("Shininess", ref shininess, 5, 100);
@@ -252,7 +256,7 @@ namespace ProgrammingClass
 
             classRoom = ObjResourceReader.CreateFromObjFileWithNormals(Gl, "ProgrammingClass.Resources.ClassRoom.obj", gray, "ProgrammingClass.Resources.ClassRoom.mtl");
             teacher = new Teacher(ref Gl);
-
+            student = new Student(ref Gl);
 
             float[] tableColor = [System.Drawing.Color.Azure.R/256f,
                                   System.Drawing.Color.Azure.G/256f,
