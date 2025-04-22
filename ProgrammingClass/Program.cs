@@ -77,6 +77,7 @@ namespace ProgrammingClass
             foreach (var keyboard in inputContext.Keyboards)
             {
                 keyboard.KeyDown += Keyboard_KeyDown;
+                keyboard.KeyUp += Keyboard_KeyUp;
             }
 
             // Handle resizes
@@ -178,7 +179,7 @@ namespace ProgrammingClass
                     camera.DecreaseZXAngle();
                     break;
                 case Key.Space:
-                    teacher.Rotate(0.5f);
+                    student.IsPlaying = true;
                     break;
                 case Key.A:
                     teacher.RotateLeftLeg(0.1f);
@@ -188,6 +189,16 @@ namespace ProgrammingClass
 
             }
         }
+        private static void Keyboard_KeyUp(IKeyboard keyboard, Key key, int arg3)
+        {
+            switch (key)
+            {
+                case Key.Space:
+                    student.IsPlaying = false;
+                    break;
+            }
+        }
+
 
         private static void GraphicWindow_Update(double deltaTime)
         {
@@ -196,6 +207,7 @@ namespace ProgrammingClass
             //cubeArrangementModel.AdvanceTime(deltaTime);
 
             imGuiController.Update((float)deltaTime);
+            student.Update((float)deltaTime);
         }
 
         private static unsafe void GraphicWindow_Render(double deltaTime)

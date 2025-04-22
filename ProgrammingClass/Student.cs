@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Silk.NET.Maths;
+using System.Numerics;
 
 
 namespace ProgrammingClass
@@ -15,8 +16,10 @@ namespace ProgrammingClass
         private GlObject rightHand;
         private GlObject leftHand;
         private float x = -4.2f;
-        private float y = .2f;
+        private float y = .1f;
         private float z = 2.8f;
+        private float time = 0f;
+
 
         private float rotationAngle = 0f;
         private float rightHandRotation = 0f;
@@ -52,7 +55,16 @@ namespace ProgrammingClass
             Program.SetUniformInt("uTexture", 0);          // 0 = GL_TEXTURE0
             Program.SetUniformInt("uUseTexture", 1);
 
-            modelMatrix = Matrix4X4.CreateRotationX(rightHandRotation) * Matrix4X4.CreateRotationY(rotationAngle) * Matrix4X4.CreateTranslation(x, y, z);
+            var shoulderOffset = new Vector3(0.06f, 0.6f, 0f);
+
+            modelMatrix =
+            Matrix4X4.CreateTranslation(-shoulderOffset.X,-shoulderOffset.Y,-shoulderOffset.Z) *
+            Matrix4X4.CreateRotationY(rightHandRotation) *
+            Matrix4X4.CreateTranslation(shoulderOffset.X,shoulderOffset.Y, shoulderOffset.Z) *
+            Matrix4X4.CreateTranslation(x, y, z);
+
+           // modelMatrix = Matrix4X4.CreateRotationX(rightHandRotation) * Matrix4X4.CreateTranslation(x, y, z);
+
 
             Program.SetModelMatrix(modelMatrix);
             Gl.BindVertexArray(rightHand.Vao);
@@ -60,29 +72,42 @@ namespace ProgrammingClass
             Gl.BindVertexArray(0);
 
             Gl.BindTexture(TextureTarget.Texture2D, leftHand.TextureId);
-            modelMatrix = Matrix4X4.CreateRotationX(leftHandRotation) * Matrix4X4.CreateRotationY(rotationAngle) * Matrix4X4.CreateTranslation(x, y, z);
+
+
+            modelMatrix =
+           Matrix4X4.CreateTranslation(-shoulderOffset.X, -shoulderOffset.Y, -shoulderOffset.Z) *
+           Matrix4X4.CreateRotationY(leftHandRotation) *
+           Matrix4X4.CreateTranslation(shoulderOffset.X, shoulderOffset.Y, shoulderOffset.Z) *
+           Matrix4X4.CreateTranslation(x, y, z);
+
+          //  modelMatrix = Matrix4X4.CreateRotationZ(leftHandRotation) * Matrix4X4.CreateTranslation(x, y, z);
 
             Program.SetModelMatrix(modelMatrix);
             Gl.BindVertexArray(leftHand.Vao);
             Gl.DrawElements(GLEnum.Triangles, leftHand.IndexArrayLength, GLEnum.UnsignedInt, null);
             Gl.BindVertexArray(0);
         }
+
+
         public void Update(float dtime)
         {
+            if (IsPlaying)
+            {
+                UpdateAnimation(dtime);
+            }
+           
+        }
+        private void UpdateAnimation(float dtime)
+        {
+            time += dtime;
 
+            float speed = MathF.PI * 4; 
+            float amplitude = MathF.PI / 32;
+
+            rightHandRotation = MathF.Sin(time * speed) * amplitude;
+            leftHandRotation = MathF.Cos(time * speed) * amplitude;
         }
-        public void Rotate(float radians)
-        {
-            rotationAngle += radians;
-        }
-        public void RotateRightLeg(float radians)
-        {
-            rightHandRotation += radians;
-        }
-        public void RotateLeftLeg(float radians)
-        {
-            leftHandRotation += radians;
-        }
+ 
         public void ReleaseGlObject()
         {
             body.ReleaseGlObject();
