@@ -25,6 +25,8 @@ namespace ProgrammingClass
         private float rightHandRotation = 0f;
         private float leftHandRotation = 0f;
 
+        public Vector3D<float> Position => new(x, y, z);
+
         public bool IsPlaying { get; set; } = false;
 
 

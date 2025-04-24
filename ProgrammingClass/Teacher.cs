@@ -22,19 +22,25 @@ namespace ProgrammingClass
         private float animationTime = 0f;
         private float animationSpeed = MathF.PI * 2f;
         private float animationAmplitude = MathF.PI / 12f;
-        float speed = 1.0f;
+        private float speed = 1.0f;
+        private Vector3D<float> StudentPos;
+        private float WaitTime = 0f;
 
+
+        public bool IsWatching { get; set; } = false;
 
         public Collider collider { get; private set; } = null;
 
         public Vector3D<float> Position => new(x, y, z);
 
-        public Teacher(ref GL Gl, float scale = 0.015f)
+        public Teacher(ref GL Gl, Vector3D<float> StudentPos, float scale = 0.015f)
         {
             float[] gray = new float[] { 0.5f, 0.5f, 0.5f };
             body = ObjResourceReader.CreateFromObjFileWithNormals(Gl, "ProgrammingClass.Resources.Body.obj", gray, "ProgrammingClass.Resources.Body.mtl", scale);
             rightLeg = ObjResourceReader.CreateFromObjFileWithNormals(Gl, "ProgrammingClass.Resources.rightLeg.obj", gray, "ProgrammingClass.Resources.rightLeg.mtl", scale);
             leftLeg = ObjResourceReader.CreateFromObjFileWithNormals(Gl, "ProgrammingClass.Resources.leftLeg.obj", gray, "ProgrammingClass.Resources.leftLeg.mtl", scale);
+
+            this.StudentPos = StudentPos;
 
             collider = new Collider(new Vector3D<float>(x,y,z), new Vector3D<float>(0.5f, 2.8f, 0.5f), ref Gl);
         }
@@ -105,14 +111,55 @@ namespace ProgrammingClass
 
         public void Update(float dtime)
         {
-            animationTime += dtime;
+            if (IsWatching)
+            {
 
-            rightLegRotation = MathF.Sin(animationTime * animationSpeed) * animationAmplitude;
-            leftLegRotation = MathF.Cos(animationTime * animationSpeed) * animationAmplitude;
+                WatchingStudent(dtime);
+            }
+            else
+            {
+                Random random = new Random();
 
-            Move(dtime);
+                int rand = random.Next(0, 200);
+                if (rand == 7)
+                {
+                    WaitTime = 0;
+                    IsWatching = true;
+                }
+            }
+
+            if (!IsWatching)
+            {
+                animationTime += dtime;
+
+                rightLegRotation = MathF.Sin(animationTime * animationSpeed) * animationAmplitude;
+                leftLegRotation = MathF.Cos(animationTime * animationSpeed) * animationAmplitude;
+
+                Move(dtime);
+
+            }
         }
-       
+        private void WatchingStudent(float dtime)
+        {
+            WaitTime += dtime;
+            var direction = Vector3D.Normalize(StudentPos - Position);
+            rotationAngle = MathF.Atan2(-direction.X, -direction.Z); 
+
+            if (WaitTime > 2f)
+            {
+                IsWatching = false;
+                SetNewRotation();
+            }
+        }
+        public void SetNewRotation()
+        {
+            Random rng = new Random();
+
+            float angleChange = (float)(rng.NextDouble() * MathF.PI + MathF.PI / 2); // 0->180 + 90 = 90->270
+            if (rng.Next(2) == 0) angleChange *= -1;
+            Rotate(angleChange);
+            
+        }
 
         public void Move(float dTime)
         {

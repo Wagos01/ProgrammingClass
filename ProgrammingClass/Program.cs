@@ -208,18 +208,18 @@ namespace ProgrammingClass
             imGuiController.Update((float)deltaTime);
             student.Update((float)deltaTime);
 
+            TeacherLogic((float)deltaTime);
+        }
+
+        private static void TeacherLogic(float deltaTime)
+        {
             teacher.Update((float)deltaTime);
 
             foreach (var c in colliders)
             {
-                if( c.Intersects(teacher.collider))
+                if (c.Intersects(teacher.collider))
                 {
-                    Random rng = new Random();
-
-                    float angleChange = (float)(rng.NextDouble() * MathF.PI + MathF.PI / 2); // 0->180 + 90 = 90->270
-                    if (rng.Next(2) == 0) angleChange *= -1;
-                    teacher.Rotate(angleChange);
-                    break;
+                    teacher.SetNewRotation();
                 }
             }
         }
@@ -308,8 +308,8 @@ namespace ProgrammingClass
 
 
             classRoom = ObjResourceReader.CreateFromObjFileWithNormals(Gl, "ProgrammingClass.Resources.ClassRoom.obj", gray, "ProgrammingClass.Resources.ClassRoom.mtl");
-            teacher = new Teacher(ref Gl);
             student = new Student(ref Gl);
+            teacher = new Teacher(ref Gl, student.Position);
 
             float[] tableColor = [System.Drawing.Color.Azure.R/256f,
                                   System.Drawing.Color.Azure.G/256f,
