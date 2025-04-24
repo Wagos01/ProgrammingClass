@@ -1,8 +1,10 @@
-﻿using Silk.NET.Input;
+﻿using ImGuiNET;
+using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.OpenGL.Extensions.ImGui;
 using Silk.NET.Windowing;
+using System;
 using System.Dynamic;
 using System.Numerics;
 using System.Reflection;
@@ -42,6 +44,8 @@ namespace ProgrammingClass
         private static Student student;
 
         private static uint program;
+
+        private static Collider[] colliders = new Collider[4];
 
         static void Main(string[] args)
         {
@@ -182,10 +186,11 @@ namespace ProgrammingClass
                     student.IsPlaying = true;
                     break;
                 case Key.A:
-                    teacher.RotateLeftLeg(0.1f);
+                    teacher.Rotate(0.1f);
                     break;
                 case Key.S:
-                    teacher.RotateRightLeg(0.1f); break;
+                    teacher.test();
+                    break;
 
             }
         }
@@ -208,6 +213,16 @@ namespace ProgrammingClass
 
             imGuiController.Update((float)deltaTime);
             student.Update((float)deltaTime);
+
+            teacher.UpdateAnimation((float)deltaTime);
+
+            foreach (var c in colliders)
+            {
+                if( c.Intersects(teacher.collider))
+                {
+                    Console.WriteLine("Collision detected");
+                }
+            }
         }
 
         private static unsafe void GraphicWindow_Render(double deltaTime)
@@ -232,12 +247,39 @@ namespace ProgrammingClass
             DrawClassRoom();
             DrawTable();
 
+
+            foreach(var c in colliders)
+            {
+                c.Draw();
+            }
+
          
             teacher.DrawTeacher(ref Gl);
             student.DrawStudent(ref Gl);
 
             ImGuiNET.ImGui.Begin("Lighting", ImGuiNET.ImGuiWindowFlags.AlwaysAutoResize | ImGuiNET.ImGuiWindowFlags.NoCollapse);
             ImGuiNET.ImGui.SliderFloat("Shininess", ref shininess, 5, 100);
+           
+
+
+            bool colliderVisible = Collider.Visible; 
+            ImGuiNET.ImGui.Checkbox("ColliderVisible", ref colliderVisible); 
+            Collider.Visible = colliderVisible;
+            
+            
+            if (ImGui.BeginCombo("ColliderType", Collider.Mode.ToString()))
+            {
+                foreach (Collider.RenderMode value in Enum.GetValues(typeof(Collider.RenderMode)))
+                {
+                    bool isSelected = Collider.Mode == value;
+                    if (ImGui.Selectable(value.ToString(), isSelected))
+                    {
+                        Collider.Mode = value;
+                    }
+                }
+                ImGui.EndCombo();
+            }
+
             ImGuiNET.ImGui.End();
 
             imGuiController.Render();
@@ -276,7 +318,14 @@ namespace ProgrammingClass
                                   1f];
             table = GlCube.CreateSquare(Gl, tableColor);
 
-
+            Collider collider = new Collider(new Vector3D<float>(0, 2, 0), new Vector3D<float>(10f, 3f, 2.5f), ref Gl);
+            Collider collider1 = new Collider(new Vector3D<float>(0, 2, 8.7f), new Vector3D<float>(10f, 3f, 2.5f), ref Gl);
+            Collider collider2 = new Collider(new Vector3D<float>(3.5f, 2, 4f), new Vector3D<float>(2.5f, 3f, 10f), ref Gl);
+            Collider collider3 = new Collider(new Vector3D<float>(-5f, 2, 4f), new Vector3D<float>(2.5f, 3f, 10f), ref Gl);
+            colliders[0] = collider;
+            colliders[1] = collider1;
+            colliders[2] = collider2;
+            colliders[3] = collider3;
         }
 
         public static unsafe void SetModelMatrix(Matrix4X4<float> modelMatrix)

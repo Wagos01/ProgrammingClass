@@ -54,7 +54,7 @@ namespace ProgrammingClass
 
             Program.SetUniformInt("uTexture", 0);          // 0 = GL_TEXTURE0
             Program.SetUniformInt("uUseTexture", 1);
-
+                
             var shoulderOffset = new Vector3(0.06f, 0.6f, 0f);
 
             modelMatrix =
