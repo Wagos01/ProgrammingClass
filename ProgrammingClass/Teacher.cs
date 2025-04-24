@@ -14,7 +14,7 @@ namespace ProgrammingClass
         private float y = 0.2f;
         private float z = 5f;
 
-        private float rotationAngle = 0f;
+        public float rotationAngle { get; private set; } = 0f;
         private float rightLegRotation = 0f;
         private float leftLegRotation = 0f;
 

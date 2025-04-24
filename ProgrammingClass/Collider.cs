@@ -10,7 +10,7 @@ namespace ProgrammingClass
         public float RotationY { get; set; } = 0f;
 
         public Vector3D<float> Size { get; set; }
-        public static bool Visible { get; set; } = true;
+        public static bool Visible { get; set; } = false;
 
         private GL gl;
 
@@ -73,6 +73,7 @@ namespace ProgrammingClass
 
         }
 
+        //AABB
         public bool Intersects(Collider other)
         {
             return (Math.Abs(Position.X - other.Position.X) * 2 < (Size.X + other.Size.X)) &&

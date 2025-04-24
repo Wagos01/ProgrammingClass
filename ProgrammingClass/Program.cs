@@ -8,6 +8,7 @@ using System;
 using System.Dynamic;
 using System.Numerics;
 using System.Reflection;
+using static ProgrammingClass.CameraDescriptor;
 
 namespace ProgrammingClass
 {
@@ -185,9 +186,7 @@ namespace ProgrammingClass
                 case Key.Space:
                     student.IsPlaying = true;
                     break;
-                case Key.A:
-                    teacher.Rotate(0.1f);
-                    break;
+               
             }
         }
         private static void Keyboard_KeyUp(IKeyboard keyboard, Key key, int arg3)
@@ -236,11 +235,39 @@ namespace ProgrammingClass
             SetUniform3(ViewPositionVariableName, new Vector3(camera.Position.X, camera.Position.Y, camera.Position.Z));
             SetUniform1(ShinenessVariableName, shininess);
 
-            var viewMatrix = Matrix4X4.CreateLookAt(camera.Position, camera.Target, camera.UpVector);
-            SetMatrix(viewMatrix, ViewMatrixVariableName);
+            Matrix4X4<float> viewMatrix;
 
             var projectionMatrix = Matrix4X4.CreatePerspectiveFieldOfView<float>((float)(Math.PI / 2), 1024f / 768f, 0.1f, 100f);
             SetMatrix(projectionMatrix, ProjectionMatrixVariableName);
+
+            switch (CameraDescriptor.currentView)
+            {
+                case CameraDescriptor.CameraViewMode.Default:
+                    viewMatrix = Matrix4X4.CreateLookAt(camera.Position, camera.Target, camera.UpVector);
+                    break;
+
+                case CameraDescriptor.CameraViewMode.StudentView:
+                    viewMatrix = Matrix4X4.CreateLookAt(
+                        camera.GetStudentCameraPosition(student.Position),
+                        camera.GetStudentCameraTarget(teacher.Position),
+                        Vector3D<float>.UnitY
+                    );
+                    break;
+
+                case CameraDescriptor.CameraViewMode.TeacherFollow:
+                    viewMatrix = Matrix4X4.CreateLookAt(
+                        camera.GetTeacherFollowCameraPosition(teacher.Position, teacher.rotationAngle),
+                        camera.GetTeacherFollowCameraTarget(teacher.Position),
+                        Vector3D<float>.UnitY
+                    );
+                    break;
+                default:
+                    viewMatrix = Matrix4X4.CreateLookAt(camera.Position, camera.Target, camera.UpVector);
+                    break;
+
+            }
+            SetMatrix(viewMatrix, ViewMatrixVariableName);
+
 
             SetUniformInt("uUseTexture", 0);// nincs textura
             DrawClassRoom();
@@ -278,6 +305,20 @@ namespace ProgrammingClass
                 }
                 ImGui.EndCombo();
             }
+
+            if (ImGui.BeginCombo("CameraView", CameraDescriptor.currentView.ToString()))
+            {
+                foreach (CameraDescriptor.CameraViewMode value in Enum.GetValues(typeof(CameraDescriptor.CameraViewMode)))
+                {
+                    bool isSelected = CameraDescriptor.currentView == value;
+                    if (ImGui.Selectable(value.ToString(), isSelected))
+                    {
+                        CameraDescriptor.currentView = value;
+                    }
+                }
+                ImGui.EndCombo();
+            }
+
 
             ImGuiNET.ImGui.End();
 
