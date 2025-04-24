@@ -51,7 +51,7 @@ namespace ProgrammingClass
             if (Visible)
             {
 
-                Program.SetModelMatrix(Matrix4X4<float>.Identity);
+                Program.SetModelMatrix(Matrix4X4<float>.Identity); // A pontokat direkt eltolom ha valtoznak, nem csak latszolag, ezert nincs szukseg itt transzformaciokra
 
                 if (Mode == RenderMode.Wireframe)
                 {

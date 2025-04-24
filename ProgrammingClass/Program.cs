@@ -188,10 +188,6 @@ namespace ProgrammingClass
                 case Key.A:
                     teacher.Rotate(0.1f);
                     break;
-                case Key.S:
-                    teacher.test();
-                    break;
-
             }
         }
         private static void Keyboard_KeyUp(IKeyboard keyboard, Key key, int arg3)
@@ -207,20 +203,23 @@ namespace ProgrammingClass
 
         private static void GraphicWindow_Update(double deltaTime)
         {
-            // NO OpenGL
-            // make it threadsafe
-            //cubeArrangementModel.AdvanceTime(deltaTime);
+           
 
             imGuiController.Update((float)deltaTime);
             student.Update((float)deltaTime);
 
-            teacher.UpdateAnimation((float)deltaTime);
+            teacher.Update((float)deltaTime);
 
             foreach (var c in colliders)
             {
                 if( c.Intersects(teacher.collider))
                 {
-                    Console.WriteLine("Collision detected");
+                    Random rng = new Random();
+
+                    float angleChange = (float)(rng.NextDouble() * MathF.PI + MathF.PI / 2); // 0->180 + 90 = 90->270
+                    if (rng.Next(2) == 0) angleChange *= -1;
+                    teacher.Rotate(angleChange);
+                    break;
                 }
             }
         }
