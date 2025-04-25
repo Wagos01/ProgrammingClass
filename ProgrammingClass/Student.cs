@@ -19,7 +19,7 @@ namespace ProgrammingClass
         private float y = .1f;
         private float z = 2.8f;
         private float time = 0f;
-
+        public int Lives { get; set; } = 3;
 
         private float rotationAngle = 0f;
         private float rightHandRotation = 0f;
@@ -28,6 +28,8 @@ namespace ProgrammingClass
         public Vector3D<float> Position => new(x, y, z);
 
         public bool IsPlaying { get; set; } = false;
+        public float score { get; set; } = 0;
+        public float highscore { get; set; } = 0;
 
 
         public Student(ref GL Gl, float scale = 0.3f)

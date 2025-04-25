@@ -9,6 +9,7 @@ using System.Dynamic;
 using System.Numerics;
 using System.Reflection;
 using static ProgrammingClass.CameraDescriptor;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace ProgrammingClass
 {
@@ -22,7 +23,9 @@ namespace ProgrammingClass
 
         private static CameraDescriptor camera = new CameraDescriptor();
 
-      
+        private static float timeToRelease = 0;
+
+
         private const string ModelMatrixVariableName = "uModel";
         private const string NormalMatrixVariableName = "uNormal";
         private const string ViewMatrixVariableName = "uView";
@@ -47,6 +50,10 @@ namespace ProgrammingClass
         private static uint program;
 
         private static Collider[] colliders = new Collider[4];
+
+        private static bool isGameOver = false;
+
+        private static bool wasCaught = false;
 
         static void Main(string[] args)
         {
@@ -202,12 +209,25 @@ namespace ProgrammingClass
 
         private static void GraphicWindow_Update(double deltaTime)
         {
+           if(student.Lives <= 0)
+            {
+                isGameOver = true;
+            }
            
 
             imGuiController.Update((float)deltaTime);
             student.Update((float)deltaTime);
 
             TeacherLogic((float)deltaTime);
+
+            if(!teacher.IsWatching && student.IsPlaying && !isGameOver)
+            {
+                student.score += (float)deltaTime;
+                if (student.score > student.highscore)
+                {
+                    student.highscore = student.score;
+                }
+            }
         }
 
         private static void TeacherLogic(float deltaTime)
@@ -221,7 +241,36 @@ namespace ProgrammingClass
                     teacher.SetNewRotation();
                 }
             }
+
+            if(teacher.IsWatching)
+            {
+                timeToRelease += deltaTime;
+
+                if(timeToRelease > 0.5f && student.IsPlaying && !wasCaught)
+                {
+                    student.Lives--;
+                    wasCaught = true;
+                }
+            }
+            else
+            {
+                timeToRelease = 0;
+                wasCaught = false;
+            }
         }
+        public static void RestartGame()
+        {
+            student.Lives = 3;
+            student.IsPlaying = false;
+            teacher.IsWatching = false;
+            timeToRelease = 0;
+            isGameOver = false;
+            student.score = 0;
+            wasCaught = false;
+        }
+
+
+
 
         private static unsafe void GraphicWindow_Render(double deltaTime)
         {
@@ -283,10 +332,8 @@ namespace ProgrammingClass
             teacher.DrawTeacher(ref Gl);
             student.DrawStudent(ref Gl);
 
-            ImGuiNET.ImGui.Begin("Lighting", ImGuiNET.ImGuiWindowFlags.AlwaysAutoResize | ImGuiNET.ImGuiWindowFlags.NoCollapse);
-            ImGuiNET.ImGui.SliderFloat("Shininess", ref shininess, 5, 100);
+            ImGuiNET.ImGui.Begin("Game Info|Settings", ImGuiNET.ImGuiWindowFlags.AlwaysAutoResize | ImGuiNET.ImGuiWindowFlags.NoCollapse);
            
-
 
             bool colliderVisible = Collider.Visible; 
             ImGuiNET.ImGui.Checkbox("ColliderVisible", ref colliderVisible); 
@@ -306,6 +353,8 @@ namespace ProgrammingClass
                 ImGui.EndCombo();
             }
 
+
+
             if (ImGui.BeginCombo("CameraView", CameraDescriptor.currentView.ToString()))
             {
                 foreach (CameraDescriptor.CameraViewMode value in Enum.GetValues(typeof(CameraDescriptor.CameraViewMode)))
@@ -319,6 +368,22 @@ namespace ProgrammingClass
                 ImGui.EndCombo();
             }
 
+            ImGui.Text($"Score: {student.score}");
+            ImGui.Text($"HighScore: {student.highscore}");
+            ImGui.Text($"Lives: {student.Lives}");
+
+            if (isGameOver)
+            {
+                ImGui.Begin("Game Over", ImGuiWindowFlags.AlwaysAutoResize);
+                ImGui.Text($"Score: {student.score}");
+                ImGui.Text($"HighScore: {student.highscore}");
+
+                if (ImGui.Button("Restart"))
+                {
+                    RestartGame();
+                }
+                ImGui.End();
+            }
 
             ImGuiNET.ImGui.End();
 
