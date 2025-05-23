@@ -36,12 +36,12 @@ namespace ProgrammingClass
         private const string ViewPositionVariableName = "uViewPos";
 
         private const string ShinenessVariableName = "uShininess";
+        private const string TextureVariableName = "uTexture";
+
 
         private static float shininess = 50;
 
         private static GlObject classRoom;
-
-        private static GlObject table;
 
         private static Teacher teacher;
 
@@ -54,6 +54,8 @@ namespace ProgrammingClass
         private static bool isGameOver = false;
 
         private static bool wasCaught = false;
+
+        private static ModelObjectDescriptor skybox;
 
         static void Main(string[] args)
         {
@@ -76,7 +78,6 @@ namespace ProgrammingClass
             //cube.Dispose();
             Gl.DeleteProgram(program);
             classRoom.ReleaseGlObject();
-            table.ReleaseGlObject();
             teacher.ReleaseGlObject();
             student.ReleaseGlObject();
         }
@@ -99,7 +100,8 @@ namespace ProgrammingClass
                 Gl.Viewport(s);
             };
 
-   
+
+            skybox = ModelObjectDescriptor.CreateSkyBox(Gl); //skybox
 
 
             imGuiController = new ImGuiController(Gl, graphicWindow, inputContext);
@@ -320,10 +322,10 @@ namespace ProgrammingClass
 
             SetUniformInt("uUseTexture", 0);// nincs textura
             DrawClassRoom();
-            DrawTable();
+            SetUniformInt("uUseTexture", 1);// nincs textura
+            DrawSkyBox();
 
-
-            foreach(var c in colliders)
+            foreach (var c in colliders)
             {
                 c.Draw();
             }
@@ -389,14 +391,7 @@ namespace ProgrammingClass
 
             imGuiController.Render();
         }
-        private static unsafe void DrawTable()
-        {
-            var modelMatrixForTable = Matrix4X4.CreateScale(1f, 1f, 1f);
-            SetModelMatrix(modelMatrixForTable);
-            Gl.BindVertexArray(table.Vao);
-            Gl.DrawElements(GLEnum.Triangles, table.IndexArrayLength, GLEnum.UnsignedInt, null);
-            Gl.BindVertexArray(0);
-        }
+       
         private static unsafe void DrawClassRoom()
         {
             var modelMatrix = Matrix4X4.CreateTranslation(0f, 0f, 5f);
@@ -421,7 +416,6 @@ namespace ProgrammingClass
                                   System.Drawing.Color.Azure.G/256f,
                                   System.Drawing.Color.Azure.B/256f,
                                   1f];
-            table = GlCube.CreateSquare(Gl, tableColor);
 
             Collider collider = new Collider(new Vector3D<float>(0, 2, 0), new Vector3D<float>(10f, 3f, 2.5f), ref Gl);
             Collider collider1 = new Collider(new Vector3D<float>(0, 2, 8.7f), new Vector3D<float>(10f, 3f, 2.5f), ref Gl);
@@ -511,6 +505,38 @@ namespace ProgrammingClass
             var error = (ErrorCode)Gl.GetError();
             if (error != ErrorCode.NoError)
                 throw new Exception("GL.GetError() returned " + error.ToString());
+        }
+        private static unsafe void DrawModelObject(ModelObjectDescriptor modelObject)
+        {
+            Gl.BindVertexArray(modelObject.Vao);
+            Gl.BindBuffer(GLEnum.ElementArrayBuffer, modelObject.Indices);
+            Gl.DrawElements(PrimitiveType.Triangles, modelObject.IndexArrayLength, DrawElementsType.UnsignedInt, null);
+            Gl.BindBuffer(GLEnum.ElementArrayBuffer, 0);
+            Gl.BindVertexArray(0);
+        }
+        private static unsafe void DrawSkyBox()
+        {
+            var modelMatrixSkyBox = Matrix4X4.CreateScale(100f);
+            SetModelMatrix(modelMatrixSkyBox);
+
+            // set the texture
+            int textureLocation = Gl.GetUniformLocation(program, TextureVariableName);
+            if (textureLocation == -1)
+            {
+                throw new Exception($"{TextureVariableName} uniform not found on shader.");
+            }
+            // set texture 0
+            Gl.Uniform1(textureLocation, 0);
+            Gl.ActiveTexture(TextureUnit.Texture0);
+            Gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (float)GLEnum.Linear);
+            Gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (float)GLEnum.Linear);
+            Gl.BindTexture(TextureTarget.Texture2D, skybox.Texture.Value);
+
+            DrawModelObject(skybox);
+
+            CheckError();
+            Gl.BindTexture(TextureTarget.Texture2D, 0);
+            CheckError();
         }
     }
 }

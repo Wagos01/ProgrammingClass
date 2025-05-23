@@ -17,6 +17,7 @@
     <None Remove="Resources\leftLeg.obj" />
     <None Remove="Resources\rightLeg.mtl" />
     <None Remove="Resources\rightLeg.obj" />
+    <None Remove="Resources\skybox.png" />
     <None Remove="Resources\StudentBody.mtl" />
     <None Remove="Resources\StudentBody.obj" />
     <None Remove="Resources\StudentLeftHand.mtl" />
@@ -36,6 +37,7 @@
     <EmbeddedResource Include="Resources\leftLeg.obj" />
     <EmbeddedResource Include="Resources\rightLeg.mtl" />
     <EmbeddedResource Include="Resources\rightLeg.obj" />
+    <EmbeddedResource Include="Resources\skybox.png" />
     <EmbeddedResource Include="Resources\StudentBody.mtl" />
     <EmbeddedResource Include="Resources\StudentBody.obj" />
     <EmbeddedResource Include="Resources\StudentLeftHand.mtl" />

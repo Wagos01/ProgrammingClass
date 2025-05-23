@@ -18,7 +18,7 @@ void main()
 {
     outCol = vCol;
     outNormal = uNormal * vNormal;
-    outWorldPosition = vec3(uModel * vec4(vPos, 1.0));
     outTexCoord = vTexCoord;
+    outWorldPosition = vec3(uModel * vec4(vPos, 1.0));
     gl_Position = uProjection * uView * uModel * vec4(vPos, 1.0);
 }
